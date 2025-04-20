@@ -1,13 +1,18 @@
 import os
 import traceback
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
 from dotenv import load_dotenv
 from service.gpt_service import suggest_career
+import logging
+import openai
+
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 class CareerAdvisor:
     @staticmethod
@@ -83,6 +88,41 @@ def career_result():
         app.logger.error(f"Unexpected Error: {str(e)}\n{error_trace}")
         return render_template('error.html',
                                message=f"Lỗi hệ thống: {str(e)}<br><pre>{error_trace}</pre>"), 500
+
+
+# Cấu hình logging
+logging.basicConfig(level=logging.INFO)
+
+# Lấy API Key từ biến môi trường
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Mặc định dùng model gpt-3.5-turbo, có thể chỉnh sau này
+DEFAULT_MODEL = "ft:gpt-3.5-turbo-0125:personal::BLnytmJ2"
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    try:
+        user_message = request.json.get('message', '').strip()
+        if not user_message:
+            return jsonify({"reply": "Không có nội dung để xử lý."}), 400
+
+        logging.info(f"User message: {user_message}")
+
+        response = openai.ChatCompletion.create(
+            model=DEFAULT_MODEL,
+            messages=[
+                {"role": "system", "content": "Bạn là một chatbot tư vấn nghề nghiệp dễ thương, hài hước và thân thiện."},
+                {"role": "user", "content": user_message}
+            ]
+        )
+
+        reply = response.choices[0].message['content'].strip()
+        logging.info(f"Bot reply: {reply}")
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        logging.error(f"Lỗi khi gọi OpenAI: {e}")
+        return jsonify({"reply": "Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau 😥"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
