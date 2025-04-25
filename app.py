@@ -56,84 +56,84 @@ def index():
 
 CORS(app)
 
-@app.route('/career-result', methods=['POST'])
-def career_result():
-    try:
-        # Lấy dữ liệu từ form
-        mbti = request.form.get('mbti', '').strip()
-        holland = request.form.get('holland', '').strip()
-        skills = request.form.get('skills', '').strip()
-        interests = request.form.get('interests', '').strip()
-
-        app.logger.info(f"Data received: MBTI={mbti}, Holland={holland}")
-
-        # Validate
-        is_valid, msg = CareerAdvisor.validate_inputs(mbti, holland, skills, interests)
-        if not is_valid:
-            return render_template('error.html', message=msg), 400
-
-        # Gọi GPT
-        try:
-            suggestion = suggest_career(mbti, holland, skills, interests)
-        except Exception as e:
-            app.logger.error(f"GPT Error: {str(e)}")
-            return render_template('error.html', message=CareerAdvisor.get_error_details(e)), 500
-
-        return render_template('result.html',
-                               mbti=mbti,
-                               holland=holland,
-                               skills=skills,
-                               interests=interests,
-                               suggestion=suggestion)
-    except Exception as e:
-        error_trace = traceback.format_exc()
-        app.logger.error(f"Unexpected Error: {str(e)}\n{error_trace}")
-        return render_template('error.html',
-                               message=f"Lỗi hệ thống: {str(e)}<br><pre>{error_trace}</pre>"), 500
-
-
 # @app.route('/career-result', methods=['POST'])
 # def career_result():
 #     try:
-#         # Nhận dữ liệu từ JSON
-#         data = request.get_json()
-#         if not data:
-#             return jsonify({"error": "Không nhận được dữ liệu JSON."}), 400
-
-#         mbti = data.get('mbti', '').strip().upper()
-#         holland = data.get('holland', '').strip().upper()
-#         skills = data.get('skills', '').strip()
-#         interests = data.get('interests', '').strip()
+#         # Lấy dữ liệu từ form
+#         mbti = request.form.get('mbti', '').strip()
+#         holland = request.form.get('holland', '').strip()
+#         skills = request.form.get('skills', '').strip()
+#         interests = request.form.get('interests', '').strip()
 
 #         app.logger.info(f"Data received: MBTI={mbti}, Holland={holland}")
 
 #         # Validate
 #         is_valid, msg = CareerAdvisor.validate_inputs(mbti, holland, skills, interests)
 #         if not is_valid:
-#             return jsonify({"error": msg}), 400
+#             return render_template('error.html', message=msg), 400
 
 #         # Gọi GPT
 #         try:
 #             suggestion = suggest_career(mbti, holland, skills, interests)
 #         except Exception as e:
 #             app.logger.error(f"GPT Error: {str(e)}")
-#             return jsonify({"error": CareerAdvisor.get_error_details(e)}), 500
+#             return render_template('error.html', message=CareerAdvisor.get_error_details(e)), 500
 
-#         return jsonify({
-#             "mbti": mbti,
-#             "holland": holland,
-#             "skills": skills,
-#             "interests": interests,
-#             "suggestion": suggestion
-#         })
-
+#         return render_template('result.html',
+#                                mbti=mbti,
+#                                holland=holland,
+#                                skills=skills,
+#                                interests=interests,
+#                                suggestion=suggestion)
 #     except Exception as e:
 #         error_trace = traceback.format_exc()
 #         app.logger.error(f"Unexpected Error: {str(e)}\n{error_trace}")
-#         return jsonify({
-#             "error": f"Lỗi hệ thống: {str(e)}",
-#             "trace": error_trace
-#         }), 500
+#         return render_template('error.html',
+#                                message=f"Lỗi hệ thống: {str(e)}<br><pre>{error_trace}</pre>"), 500
+
+
+@app.route('/career-result', methods=['POST'])
+def career_result():
+    try:
+        # Nhận dữ liệu từ JSON
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Không nhận được dữ liệu JSON."}), 400
+
+        mbti = data.get('mbti', '').strip().upper()
+        holland = data.get('holland', '').strip().upper()
+        skills = data.get('skills', '').strip()
+        interests = data.get('interests', '').strip()
+
+        app.logger.info(f"Data received: MBTI={mbti}, Holland={holland}")
+
+        # Validate
+        is_valid, msg = CareerAdvisor.validate_inputs(mbti, holland, skills, interests)
+        if not is_valid:
+            return jsonify({"error": msg}), 400
+
+        # Gọi GPT
+        try:
+            suggestion = suggest_career(mbti, holland, skills, interests)
+        except Exception as e:
+            app.logger.error(f"GPT Error: {str(e)}")
+            return jsonify({"error": CareerAdvisor.get_error_details(e)}), 500
+
+        return jsonify({
+            "mbti": mbti,
+            "holland": holland,
+            "skills": skills,
+            "interests": interests,
+            "suggestion": suggestion
+        })
+
+    except Exception as e:
+        error_trace = traceback.format_exc()
+        app.logger.error(f"Unexpected Error: {str(e)}\n{error_trace}")
+        return jsonify({
+            "error": f"Lỗi hệ thống: {str(e)}",
+            "trace": error_trace
+        }), 500
 
 # Cấu hình logging
 logging.basicConfig(level=logging.INFO)
