@@ -103,11 +103,11 @@
       document.querySelectorAll(".error").forEach((el) => (el.style.display = "none"));
 
       // Validate MBTI: 4 ký tự in hoa trong tập [E, I, S, N, T, F, J, P]
-      const mbti = document.getElementById("mbti").value.trim();
+      {% comment %} const mbti = document.getElementById("mbti").value.trim();
       if (!/^[EISNTFJP]{4}$/.test(mbti)) {
         document.getElementById("mbtiError").style.display = "block";
         isValid = false;
-      }
+      } {% endcomment %}
 
       // Validate Holland: 2 ký tự in hoa trong tập [RIASEC]
       const holland = document.getElementById("holland").value.trim();
