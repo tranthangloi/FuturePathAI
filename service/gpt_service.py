@@ -20,9 +20,9 @@ def suggest_career(mbti, holland, skills, interests):
         f"Sở thích: {interests}\n"
         "Dựa trên thông tin trên, hãy gợi ý 3 nghề nghiệp phù hợp nhất theo định dạng sau:\n"
         "1. Tên nghề nghiệp\n"
-        "2. Mô tả ngắn gọn nghề đó\n"
-        "3. Lý do vì sao phù hợp với người dùng\n"
-        "4. Những kỹ năng cần thiết cho nghề đó\n\n"
+        "- Mô tả ngắn gọn nghề đó\n"
+        "- Lý do vì sao phù hợp với người dùng\n"
+        "- Những kỹ năng cần thiết cho nghề đó\n\n"
         "Trình bày từng nghề từ 1 đến 3."
     )
 
