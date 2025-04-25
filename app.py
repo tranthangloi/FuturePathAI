@@ -170,4 +170,4 @@ def chatbot():
         return jsonify({"reply": "Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau 😥"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
