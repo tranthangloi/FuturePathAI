@@ -169,5 +169,5 @@ def chatbot():
         logging.error(f"Lỗi khi gọi OpenAI: {e}")
         return jsonify({"reply": "Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại sau 😥"}), 500
 
-def handler(environ, start_response):
-    return app.wsgi_app(environ, start_response)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
